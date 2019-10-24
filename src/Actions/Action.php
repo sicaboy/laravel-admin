@@ -290,7 +290,14 @@ SCRIPT;
      */
     public function actionScript()
     {
-        return '';
+        return <<<SCRIPT
+$('.modal-dialog button[type=submit]').click(function(){
+    $(this).attr('data-loading-text', '<i class="fa fa-circle-o-notch fa-spin"></i> Processing...');
+    setTimeout(function(){
+        $('.modal-dialog button[type=submit]').button('loading');
+    }, 1);
+});
+SCRIPT;
     }
 
     /**
@@ -300,7 +307,9 @@ SCRIPT;
     {
         return <<<SCRIPT
         var process = new Promise(function (resolve,reject) {
-            
+            setTimeout(function(){
+                $('.modal-dialog button[type=submit]').button('reset');
+            }, 100);
             Object.assign(data, {
                 _token: $.admin.token,
                 _action: '{$this->getCalledClass()}',
