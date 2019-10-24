@@ -307,9 +307,7 @@ SCRIPT;
     {
         return <<<SCRIPT
         var process = new Promise(function (resolve,reject) {
-            setTimeout(function(){
-                $('.modal-dialog button[type=submit]').button('reset');
-            }, 100);
+
             Object.assign(data, {
                 _token: $.admin.token,
                 _action: '{$this->getCalledClass()}',
@@ -338,7 +336,9 @@ SCRIPT;
     {
         $resolve = <<<'SCRIPT'
 var actionResolver = function (data) {
-
+            setTimeout(function(){
+                $('.modal-dialog button[type=submit]').button('reset');
+            }, 100);
             var response = data[0];
             var target   = data[1];
                 
