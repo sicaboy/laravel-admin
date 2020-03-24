@@ -7,7 +7,7 @@ return [
     'setting'               => 'Setting',
     'name'                  => 'Name',
     'username'              => 'Username',
-    'email'                  => 'Email',
+    'email'                 => 'Email',
     'password'              => 'Password',
     'password_confirmation' => 'Password confirmation',
     'remember_me'           => 'Remember me',
