@@ -28,7 +28,7 @@ class UserController extends AdminController
         $grid = new Grid(new $userModel());
 
         $grid->column('id', 'ID')->sortable();
-        $grid->column('username', trans('admin.username'));
+        $grid->column('email', trans('admin.email'));
         $grid->column('name', trans('admin.name'));
         $grid->column('roles', trans('admin.roles'))->pluck('name')->label();
         $grid->column('created_at', trans('admin.created_at'));

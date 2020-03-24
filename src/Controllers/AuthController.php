@@ -65,7 +65,7 @@ class AuthController extends Controller
     protected function loginValidator(array $data)
     {
         return Validator::make($data, [
-            $this->username()   => 'required',
+            'email'   => 'required,email',
             'password'          => 'required',
         ]);
     }
@@ -128,10 +128,17 @@ class AuthController extends Controller
 
         $form = new Form(new $class());
 
-        $form->display('username', trans('admin.username'));
+        $form->display('email', trans('admin.email'))->rules('required|email');
         $form->text('name', trans('admin.name'))->rules('required');
-        $form->image('avatar', trans('admin.avatar'));
-        $form->password('password', trans('admin.password'))->rules('confirmed|required');
+//        $form->image('avatar', trans('admin.avatar'));
+        $form->password('password', trans('admin.password'))->rules([
+                'confirmed',
+                'required',
+                'min:8',
+                'regex:/[a-z]/',      // must contain at least one lowercase letter
+                'regex:/[A-Z]/',      // must contain at least one uppercase letter
+                'regex:/[0-9]/',      // must contain at least one digit
+            ]);
         $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
             ->default(function ($form) {
                 return $form->model()->password;
@@ -203,7 +210,7 @@ class AuthController extends Controller
      */
     protected function username()
     {
-        return 'username';
+        return 'email';
     }
 
     /**

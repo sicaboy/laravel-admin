@@ -28,7 +28,7 @@ class CreateUserCommand extends Command
         $userModel = config('admin.database.users_model');
         $roleModel = config('admin.database.roles_model');
 
-        $username = $this->ask('Please enter a username to login');
+        $email = $this->ask('Please enter a email to login');
 
         $password = bcrypt($this->secret('Please enter a password to login'));
 
@@ -47,7 +47,7 @@ class CreateUserCommand extends Command
             });
         }
 
-        $user = new $userModel(compact('username', 'password', 'name'));
+        $user = new $userModel(compact('email', 'password', 'name'));
 
         $user->save();
 
