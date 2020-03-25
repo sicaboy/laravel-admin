@@ -7,6 +7,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Layout\Content;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
@@ -17,7 +18,8 @@ class AuthController extends Controller
      * @var string
      */
     protected $loginView = 'admin::login';
-
+    protected $failLoginLimit = 5;
+    protected $failedLogin;
     /**
      * Show the login page.
      *
@@ -41,18 +43,47 @@ class AuthController extends Controller
      */
     public function postLogin(Request $request)
     {
+        if($this->isLockedout()) {
+            return back()->withInput()->withErrors([
+                $this->username() => $this->lockoutMessage(),
+            ]);
+        }
+
         $this->loginValidator($request->all())->validate();
 
         $credentials = $request->only([$this->username(), 'password']);
         $remember = $request->get('remember', false);
 
         if ($this->guard()->attempt($credentials, $remember)) {
+            Cache::forget('failedLogin_' . getenv('REMOTE_ADDR'));
             return $this->sendLoginResponse($request);
         }
 
         return back()->withInput()->withErrors([
-            $this->username() => $this->getFailedLoginMessage(),
+            $this->username() => [
+                $this->getFailedLoginMessage(),
+                $this->lockoutMessage()
+            ],
         ]);
+    }
+
+    protected function isLockedout()
+    {
+        $this->failedLogin = Cache::get('failedLogin_' . getenv('REMOTE_ADDR'), 0);
+        if ($this->failedLogin >= $this->failLoginLimit) {
+            return true;
+        }
+        $this->failedLogin++;
+        Cache::put('failedLogin_' . getenv('REMOTE_ADDR'), $this->failedLogin, 3600); ;
+        return false;
+    }
+
+    protected function lockoutMessage()
+    {
+        if ($this->failedLogin >= $this->failLoginLimit) {
+            return 'Your have been locekedout for one hour due to failed login ' . $this->failLoginLimit . ' times from your IP address ' . getenv('REMOTE_ADDR');
+        }
+        return 'Your will be locekedout for one hour, if you failed login for ' . ($this->failLoginLimit - $this->failedLogin) . ' more times from your IP address ' . getenv('REMOTE_ADDR');
     }
 
     /**

@@ -28,6 +28,8 @@ class CreateAdminTables extends Migration
             $table->string('name');
             $table->string('avatar')->nullable();
             $table->string('remember_token', 100)->nullable();
+            $table->timestamp('last_failed_login_at')->nullable();
+            $table->integer('failed_login_count')->nullable()->default(0);
             $table->timestamps();
         });
 
