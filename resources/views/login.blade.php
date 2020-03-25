@@ -46,7 +46,7 @@
         @endif
 
         <input type="text" class="form-control" placeholder="Email" name="email" value="{{ old('email') }}">
-        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+{{--        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>--}}
       </div>
       <div class="form-group has-feedback {!! !$errors->has('password') ?: 'has-error' !!}">
 
