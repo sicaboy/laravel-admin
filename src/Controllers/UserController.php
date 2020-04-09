@@ -100,14 +100,13 @@ class UserController extends AdminController
 
         $form->text('name', trans('admin.name'))->rules('required');
         // $form->image('avatar', trans('admin.avatar'));
-        $form->password('password', trans('admin.password'))->rules([
-            'confirmed',
-            'required',
-            'min:8',
-            'regex:/[a-z]/',      // must contain at least one lowercase letter
-            'regex:/[A-Z]/',      // must contain at least one uppercase letter
-            'regex:/[0-9]/',      // must contain at least one digit
-        ])->setValidationMessages('default', [
+        $form->password('password', trans('admin.password'))->rules(
+            config('admin.user.password_rule', [
+                'confirmed',
+                'required',
+                'min:8',
+            ])
+        )->setValidationMessages('default', [
             'regex' => 'Must contain at least one lowercase letter, one uppercase letter and one digit'
         ]);
         $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
