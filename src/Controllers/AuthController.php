@@ -81,9 +81,9 @@ class AuthController extends Controller
     protected function lockoutMessage()
     {
         if ($this->failedLogin >= $this->failLoginLimit) {
-            return 'Your have been locekedout for one hour due to failed login ' . $this->failLoginLimit . ' times from your IP address ' . getenv('REMOTE_ADDR');
+            return 'You have been locked for one hour due to failed login ' . $this->failLoginLimit . ' times from your IP address ' . getenv('REMOTE_ADDR');
         }
-        return 'Your will be locekedout for one hour, if you failed login for ' . ($this->failLoginLimit - $this->failedLogin) . ' more times from your IP address ' . getenv('REMOTE_ADDR');
+        return 'You will be locked for one hour, if you failed login for ' . ($this->failLoginLimit - $this->failedLogin) . ' more times from your IP address ' . getenv('REMOTE_ADDR');
     }
 
     /**
@@ -159,9 +159,10 @@ class AuthController extends Controller
 
         $form = new Form(new $class());
 
-        $form->display('email', trans('admin.email'))->rules('required|email');
+//        $form->display('email', trans('admin.email'))->rules('required|email');
         $form->text('name', trans('admin.name'))->rules('required');
 //        $form->image('avatar', trans('admin.avatar'));
+
         $form->password('password', trans('admin.password'))->rules([
             'confirmed',
             'required',
@@ -169,6 +170,8 @@ class AuthController extends Controller
             'regex:/[a-z]/',      // must contain at least one lowercase letter
             'regex:/[A-Z]/',      // must contain at least one uppercase letter
             'regex:/[0-9]/',      // must contain at least one digit
+            new \Sicaboy\LaravelSecurity\Rules\NotCommonPassword(),
+            new \Sicaboy\LaravelSecurity\Rules\NotAUsedPassword(Admin::user()->id),
         ])->setValidationMessages('default', [
             'regex' => 'Must contain at least one lowercase letter, one uppercase letter and one digit'
         ]);
@@ -184,12 +187,13 @@ class AuthController extends Controller
         $form->saving(function (Form $form) {
             if ($form->password && $form->model()->password != $form->password) {
                 $form->password = bcrypt($form->password);
+                $form->model()->password = $form->password;
+                event(new \Illuminate\Auth\Events\PasswordReset($form->model()));
             }
         });
 
         $form->saved(function () {
             admin_toastr(trans('admin.update_succeeded'));
-
             return redirect(admin_url('auth/setting'));
         });
 

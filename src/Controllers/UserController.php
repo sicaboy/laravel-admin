@@ -99,14 +99,17 @@ class UserController extends AdminController
             ->updateRules(['required', 'email', "unique:{$connection}.{$userTable},email,{{id}}"]);
 
         $form->text('name', trans('admin.name'))->rules('required');
-        // $form->image('avatar', trans('admin.avatar'));
-        $form->password('password', trans('admin.password'))->rules(
-            config('admin.user.password_rule', [
-                'confirmed',
-                'required',
-                'min:8',
-            ])
-        )->setValidationMessages('default', [
+
+        $form->password('password', trans('admin.password'))->rules([
+            'confirmed',
+            'required',
+            'min:8',
+            'regex:/[a-z]/',      // must contain at least one lowercase letter
+            'regex:/[A-Z]/',      // must contain at least one uppercase letter
+            'regex:/[0-9]/',      // must contain at least one digit
+            new \Sicaboy\LaravelSecurity\Rules\NotCommonPassword(),
+            new \Sicaboy\LaravelSecurity\Rules\NotAUsedPassword(array_get(request()->route()->parameters('user'), 'user', null)),
+        ])->setValidationMessages('default', [
             'regex' => 'Must contain at least one lowercase letter, one uppercase letter and one digit'
         ]);
         $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
@@ -125,6 +128,8 @@ class UserController extends AdminController
         $form->saving(function (Form $form) {
             if ($form->password && $form->model()->password != $form->password) {
                 $form->password = bcrypt($form->password);
+                $form->model()->password = $form->password;
+                event(new \Illuminate\Auth\Events\PasswordReset($form->model()));
             }
         });
 
