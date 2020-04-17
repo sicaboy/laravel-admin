@@ -36,7 +36,7 @@
   <div class="login-box-body">
     <p class="login-box-msg">{{ trans('admin.login') }}</p>
 
-    <form action="{{ admin_url('auth/login') }}" method="post">
+    <form action="{{ admin_url('auth/login') }}" method="post" autocomplete="off">
       <div class="form-group has-feedback {!! !$errors->has('username') ?: 'has-error' !!}">
 
         @if($errors->has('email'))
@@ -45,7 +45,7 @@
           @endforeach
         @endif
 
-        <input type="text" class="form-control" placeholder="Email" name="email" value="{{ old('email') }}">
+        <input type="text" class="form-control" placeholder="Email" name="email" value="{{ old('email') }}" autocomplete="off">
 {{--        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>--}}
       </div>
       <div class="form-group has-feedback {!! !$errors->has('password') ?: 'has-error' !!}">
@@ -56,7 +56,7 @@
           @endforeach
         @endif
 
-        <input type="password" class="form-control" placeholder="{{ trans('admin.password') }}" name="password">
+        <input type="password" class="form-control" placeholder="{{ trans('admin.password') }}" name="password" autocomplete="off">
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
       <div class="row">
