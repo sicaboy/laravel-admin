@@ -2,6 +2,7 @@
 
 namespace Encore\Admin\Controllers;
 
+use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
@@ -100,6 +101,8 @@ class UserController extends AdminController
 
         $form->text('name', trans('admin.name'))->rules('required');
 
+        $user = Administrator::find(array_get(request()->route()->parameters('user'), 'user', null));
+
         $form->password('password', trans('admin.password'))->rules([
             'confirmed',
             'required',
@@ -108,7 +111,7 @@ class UserController extends AdminController
             'regex:/[A-Z]/',      // must contain at least one uppercase letter
             'regex:/[0-9]/',      // must contain at least one digit
             new \Sicaboy\LaravelSecurity\Rules\NotCommonPassword(),
-            new \Sicaboy\LaravelSecurity\Rules\NotAUsedPassword(array_get(request()->route()->parameters('user'), 'user', null)),
+            new \Sicaboy\LaravelSecurity\Rules\NotAUsedPassword($user),
         ])->setValidationMessages('default', [
             'regex' => 'Must contain at least one lowercase letter, one uppercase letter and one digit'
         ]);

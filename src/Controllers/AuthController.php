@@ -163,6 +163,8 @@ class AuthController extends Controller
         $form->text('name', trans('admin.name'))->rules('required');
 //        $form->image('avatar', trans('admin.avatar'));
 
+        $user = Admin::user();
+
         $form->password('password', trans('admin.password'))->rules([
             'confirmed',
             'required',
@@ -171,7 +173,7 @@ class AuthController extends Controller
             'regex:/[A-Z]/',      // must contain at least one uppercase letter
             'regex:/[0-9]/',      // must contain at least one digit
             new \Sicaboy\LaravelSecurity\Rules\NotCommonPassword(),
-            new \Sicaboy\LaravelSecurity\Rules\NotAUsedPassword(Admin::user()->id),
+            new \Sicaboy\LaravelSecurity\Rules\NotAUsedPassword($user),
         ])->setValidationMessages('default', [
             'regex' => 'Must contain at least one lowercase letter, one uppercase letter and one digit'
         ]);
