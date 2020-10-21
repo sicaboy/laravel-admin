@@ -6,6 +6,7 @@ use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use Illuminate\Support\Arr;
 
 class UserController extends AdminController
 {
@@ -101,7 +102,7 @@ class UserController extends AdminController
 
         $form->text('name', trans('admin.name'))->rules('required');
 
-        $user = Administrator::find(array_get(request()->route()->parameters('user'), 'user', null));
+        $user = Administrator::find(Arr::get(request()->route()->parameters('user'), 'user', null));
 
         $form->password('password', trans('admin.password'))->rules([
             'confirmed',
