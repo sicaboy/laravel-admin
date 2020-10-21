@@ -21,6 +21,7 @@
         "laravel/laravel": ">=5.5",
         "fzaninotto/faker": "~1.4",
         "intervention/image": "~2.3",
+        "sicaboy/laravel-security": "~1.1",
         "laravel/browser-kit-testing": "^6.0",
         "spatie/phpunit-watcher": "^1.22.0"
     },
