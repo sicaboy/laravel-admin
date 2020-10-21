@@ -133,8 +133,11 @@ class UserController extends AdminController
             if ($form->password && $form->model()->password != $form->password) {
                 $form->password = bcrypt($form->password);
                 $form->model()->password = $form->password;
-                event(new \Illuminate\Auth\Events\PasswordReset($form->model()));
             }
+        });
+
+        $form->saved(function (Form $form) {
+            event(new \Illuminate\Auth\Events\PasswordReset($form->model()));
         });
 
         return $form;
